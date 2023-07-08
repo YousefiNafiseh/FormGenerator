@@ -2,6 +2,14 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Installation
+
+Use the package manager npm to install foobar.
+
+```bash
+npm i
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -13,6 +21,25 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
+
+## Usage
+
+```react
+1.Click on the Create New Page button
+
+2. Fill the form for creating form fields
+
+3.If you want to have a required field , fill requiredIf field with "required" value,
+and if it is required based on anothe field,it is written like this
+"fieldName,!=''"
+
+4.Then click on the Submit Element button
+
+5. Enter page name
+
+6.Click on the Submit Page
+```
+
 
 ### `npm test`
 
