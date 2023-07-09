@@ -9,9 +9,14 @@ createServer({
     this.namespace = "api" 
 
     this.post("/pages", (schema, request) => {
-      let attrs = JSON.parse(request.requestBody) 
-      return schema.pages.create(attrs) 
-    }) 
+      let attrs = JSON.parse(request.requestBody);
+      const data=localStorage.getItem("pages")
+      localStorage.setItem(
+        "pages",
+        JSON.stringify(data?[...JSON.parse(data), attrs]:[attrs])
+      );
+      return schema.pages.create(attrs);
+    })
 
     this.get("/pages", (schema, request) => {
       return schema.pages.all() 
@@ -41,5 +46,8 @@ createServer({
         },
       ],
     }) 
+    JSON.parse(localStorage.getItem("pages"))?.forEach((item) => {
+      server.create("page", { name: item?.name, elements: item?.elements });
+    });
   },
 }) 
