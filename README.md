@@ -25,19 +25,19 @@ You will also see any lint errors in the console.
 ## Usage
 
 ```react
-1.Click on the Create New Page button
+1. Click on the Create New Page button
 
-2. Fill the form for creating form fields
+2. Fill out the form for creating form fields
 
-3.If you want to have a required field , fill requiredIf field with "required" value,
-and if it is required based on anothe field,it is written like this
+3. If you want to have a required field, fill requiredIf field with the "required" value,
+and if it is required based on another field, it is written like this
 "fieldName,!=''"
 
-4.Then click on the Submit Element button
+4. Then click on the Submit Element button
 
-5. Enter page name
+5. Enter a page name
 
-6.Click on the Submit Page
+6. Click on the Submit Page
 ```
 
 
