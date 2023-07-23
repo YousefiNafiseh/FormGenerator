@@ -3,15 +3,15 @@ import {
   useMutation,
   useQuery,
   useQueryClient
-} from "@tanstack/react-query"
-import { useEffect, useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { useNavigate, useSearchParams } from "react-router-dom"
-import Form from "../../components/form"
-import InputController from "../../components/inputController"
-import * as paths from "../../routeConfig/paths"
-import { Element, ElementType, Page } from "../../types"
-import Fields from "./Fields"
+} from "@tanstack/react-query";
+import { useEffect } from "react";
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Form from "../../components/form";
+import InputController from "../../components/inputController";
+import * as paths from "../../routeConfig/paths";
+import { ElementType, Page } from "../../types";
+import Fields from "./Fields";
 
 const CreatePage = () => {
   const [searchParams] = useSearchParams()
@@ -21,51 +21,27 @@ const CreatePage = () => {
     return response.json()
   })
   const navigate = useNavigate()
-  const formProviderProps = useForm<Page>()
-  const queryClient = useQueryClient()
-  const [pageElements, setPageElements] = useState<Element[]>(() =>
-    pageId
-      ? []
-      : [
-        {
+  const formProviderProps = useForm<Page>(
+    {
+      defaultValues: {
+        id: '0',
+        name: 'page1',
+        elements: [{
           type: ElementType.Text,
-          name: "",
-        },
-      ]
+          name: 'firstName'
+        }]
+      }
+    }
   )
-
-  const createPageFields = (element: Element, indexElement: number) => {
-    const pageElementCopy = [...pageElements]
-    pageElementCopy[indexElement] = element
-    setPageElements([...pageElementCopy])
-  }
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (data && pageId) {
       const { name, elements } = data?.page as Page
       formProviderProps.setValue("name", name)
-      setPageElements(elements)
+      formProviderProps.reset(data.page)
     }
   }, [data])
-
-  const renderFields = () => {
-    return pageElements?.map((currentElement: Element, index: number) => (
-      <Fields
-        {...{ createPageFields }}
-        indexElement={index}
-        element={currentElement}
-      />
-    ))
-  }
-  const addNewElement = () => {
-    setPageElements((prvElements) => [
-      ...prvElements,
-      {
-        type: ElementType.Text,
-        name: "",
-      },
-    ])
-  }
 
   const postMutate = useMutation(
     (data: Page) =>
@@ -82,7 +58,7 @@ const CreatePage = () => {
         queryClient.invalidateQueries({
           queryKey: ["pages"],
         })
-       showPages()
+        showPages()
       },
     }
   )
@@ -102,7 +78,7 @@ const CreatePage = () => {
         queryClient.invalidateQueries({
           queryKey: ["pages"],
         })
-       showPages()
+        showPages()
       },
     }
   )
@@ -111,28 +87,45 @@ const CreatePage = () => {
     if (pageId) {
       putMutation.mutate({
         name: data.name as string,
-        elements: pageElements,
+        elements: data.elements
       })
     } else {
       postMutate.mutate({
         name: data.name as string,
-        elements: pageElements,
+        elements: data.elements
       })
     }
   }
 
-  const showPages = ()=>{
+  const showPages = () => {
     navigate(paths.PAGE)
+  }
+
+  const deleteMutation = useMutation(
+    () =>
+      fetch(`/api/pages/${pageId}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["pages"],
+        })
+        showPages()
+      },
+    }
+  )
+
+  const deletePage = () => {
+    deleteMutation.mutate()
   }
 
   return (
     <>
-      {renderFields()}
-      <Box mt={2}>
-        <Button colorScheme="teal" onClick={addNewElement}>
-          Add New Element
-        </Button>
-      </Box>
       <Box mt={4}>
         <Form {...{ formProviderProps, onSubmit }}>
           <InputController
@@ -142,10 +135,29 @@ const CreatePage = () => {
               required: { value: true, message: "Page Name is required" },
             }}
           />
-          <Button colorScheme="teal" type="submit">
-            Submit Page
+          <Fields {...{ formProviderProps }} />
+          <Box mt={4}>
+            <Button
+              mr={4}
+              colorScheme="blue"
+              variant='solid'
+              type="submit">
+              Submit Page
           </Button>
-          <Button type="submit"  mx={4} onClick={()=>showPages()}>Close Form</Button>
+            {pageId && <Button
+              colorScheme="red"
+              variant="solid"
+              onClick={() => deletePage()}>
+              Delete Page
+            </Button>}
+            <Button
+              ml={4}
+              colorScheme="blue"
+              variant="outline"
+              onClick={() => showPages()}>
+              Close
+            </Button>
+          </Box>
         </Form>
       </Box>
     </>

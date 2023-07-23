@@ -31,8 +31,27 @@ createServer({
       let newAttrs = JSON.parse(request.requestBody) 
       let id = request.params.id 
       let page = schema.pages.find(id) 
+      const data=localStorage.getItem("pages")
+      const pages = JSON.parse(data)
+      const findIndex = pages.findIndex(page=> page.id === id) 
+      pages[findIndex] = newAttrs
+      localStorage.setItem(
+        "pages",
+        JSON.stringify([...pages])
+      );
       return page.update(newAttrs) 
     }) 
+    this.delete("pages/:id",(schema, request) => {
+      const id = request.params.id
+      const data=localStorage.getItem("pages")
+      const pages = JSON.parse(data)
+      const newPages = pages?.filter(page=> page.id !== id) 
+      localStorage.setItem(
+        "pages",
+        JSON.stringify([...newPages])
+      );
+      return schema.pages.find(id).destroy()
+    })
   },
   seeds(server) {
     server.create("page", {
