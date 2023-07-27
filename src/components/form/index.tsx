@@ -6,6 +6,7 @@ import {
   useForm,
   UseFormProps, UseFormReturn
 } from "react-hook-form";
+import { extendTheme } from "@chakra-ui/react";
 
 
 type functionalChildren<T extends Record<string, any>> = (

@@ -126,33 +126,41 @@ const CreatePage = () => {
 
   return (
     <>
-      <Box mt={4}>
+      <Box py={8} px={4} color={"gray.600"}>
         <Form {...{ formProviderProps, onSubmit }}>
-          <InputController
-            name={"name"}
-            label={"Page Name"}
-            formRules={{
-              required: { value: true, message: "Page Name is required" },
-            }}
-          />
-          <Fields {...{ formProviderProps }} />
-          <Box mt={4}>
-            <Button
-              mr={4}
-              colorScheme="blue"
-              variant='solid'
-              type="submit">
-              Submit Page
+          <Box>
+            <InputController
+              focusBorderColor={"green.300"}
+              name={"name"}
+              label={"Page Name"}
+              formRules={{
+                required: { value: true, message: "Page Name is required" },
+              }}
+            />
+            <Fields {...{ formProviderProps }} />
+          </Box>
+          <Box mt={10} display={"flex"} justifyContent={"space-between"}>
+            <Box>
+              <Button
+                mr={4}
+                colorScheme='green'
+                variant='solid'
+                size='lg'
+                type="submit">
+                Submit Page
           </Button>
-            {pageId && <Button
-              colorScheme="red"
-              variant="solid"
-              onClick={() => deletePage()}>
-              Delete Page
+              {pageId && <Button
+                colorScheme="red"
+                variant="solid"
+                size='lg'
+                onClick={() => deletePage()}>
+                Delete Page
             </Button>}
+            </Box>
             <Button
               ml={4}
-              colorScheme="blue"
+              colorScheme='green'
+              size='lg'
               variant="outline"
               onClick={() => showPages()}>
               Close

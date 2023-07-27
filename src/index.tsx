@@ -13,8 +13,8 @@ import "./server/mockApi"
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
-) 
-const queryClient = new QueryClient() 
+)
+const queryClient = new QueryClient()
 
 root.render(
   <QueryClientProvider client={queryClient}>
@@ -24,6 +24,6 @@ root.render(
       </BrowserRouter>
     </ChakraProvider>
   </QueryClientProvider>
-) 
+)
 
 reportWebVitals() 

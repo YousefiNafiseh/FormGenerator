@@ -1,10 +1,11 @@
 import { lazy, Suspense } from "react"
-
+import { Loading } from "../../components/loading"
 const CreatePage = lazy(() => import("./CreatePage"))
 
 function LazyCreatePage() {
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading />}>
       <CreatePage />
     </Suspense>
   )
