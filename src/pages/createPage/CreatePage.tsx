@@ -1,19 +1,21 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, useDisclosure } from "@chakra-ui/react" 
 import {
   useMutation,
   useQuery,
   useQueryClient
-} from "@tanstack/react-query";
-import { useEffect } from "react";
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Form from "../../components/form";
-import InputController from "../../components/inputController";
-import * as paths from "../../routeConfig/paths";
-import { ElementType, Page } from "../../types";
-import Fields from "./Fields";
+} from "@tanstack/react-query" 
+import { useEffect } from "react" 
+import { SubmitHandler, useForm } from "react-hook-form"  
+import { useNavigate, useSearchParams } from "react-router-dom" 
+import Form from "../../components/form" 
+import InputController from "../../components/inputController" 
+import * as paths from "../../routeConfig/paths" 
+import { ElementType, Page } from "../../types" 
+import Fields from "./Fields" 
+import { FormModal } from "../../components/formModal"
 
 const CreatePage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const [searchParams] = useSearchParams()
   const pageId = searchParams.get("pageId") ?? ""
   const { data } = useQuery(["pages", pageId], async () => {
@@ -24,11 +26,11 @@ const CreatePage = () => {
   const formProviderProps = useForm<Page>(
     {
       defaultValues: {
-        id: '0',
-        name: 'page1',
+        id: "0" ,
+        name: "" ,
         elements: [{
           type: ElementType.Text,
-          name: 'firstName'
+          name: "" 
         }]
       }
     }
@@ -124,6 +126,10 @@ const CreatePage = () => {
     deleteMutation.mutate()
   }
 
+  const closePage = () => {
+
+  }
+
   return (
     <>
       <Box py={8} px={4} color={"gray.600"}>
@@ -143,24 +149,38 @@ const CreatePage = () => {
             <Box>
               <Button
                 mr={4}
-                colorScheme='green'
-                variant='solid'
-                size='lg'
+                colorScheme="green" 
+                variant="solid" 
+                size= "lg" 
                 type="submit">
                 Submit Page
           </Button>
-              {pageId && <Button
-                colorScheme="red"
-                variant="solid"
-                size='lg'
-                onClick={() => deletePage()}>
-                Delete Page
-            </Button>}
+              {pageId &&
+                <>
+                  <Button
+                    colorScheme="red"
+                    variant="solid"
+                    size= "lg"
+                    onClick={()=>onOpen()}>
+                    Delete Page
+                  </Button>
+                  <FormModal
+                    {...{
+                      isOpen,
+                      onOpen,
+                      onClose
+                    }}
+                    onAccept={() => deletePage()}
+                    header={"Delete Field"}
+                    body={"Are You Sure?"}
+                  />
+                </>
+              }
             </Box>
             <Button
               ml={4}
-              colorScheme='green'
-              size='lg'
+              colorScheme= "green"
+              size= "lg"
               variant="outline"
               onClick={() => showPages()}>
               Close

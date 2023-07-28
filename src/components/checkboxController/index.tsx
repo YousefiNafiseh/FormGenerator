@@ -34,12 +34,15 @@ const CheckboxController = ({
       render={({ field: { onBlur, onChange, value }, fieldState }) => {
         return (
           <FormControl isInvalid={fieldState.invalid}>
-            <FormLabel>{label}</FormLabel>
+            {props.display !== "none" && <FormLabel>{label}</FormLabel>}
             <Checkbox
               value={value}
-              onChange={onChange}
               onBlur={onBlur}
               {...props}
+              onChange={(e) => {
+                onChange(e)
+                props?.onChange?.(e)
+              }}
               placeholder={label}
             />
             {!fieldState.invalid ? (

@@ -31,9 +31,10 @@ You will also see any lint errors in the console.
 
 3. If you want to have a required field, fill requiredIf field with the "required" value,
 and if it is required based on another field, it is written like this
-"fieldName,!=''"
+"fieldName !=''"
 
-4. Then click on the Submit Element button
+4. If you want to disable or not display a field, you can write a condition like this
+"fieldName !=''" in VisibleIf or EditableIf field
 
 5. Enter a page name
 

@@ -39,12 +39,15 @@ const RedioController = ({
       render={({ field: { onBlur, onChange, value }, fieldState }) => {
         return (
           <FormControl isInvalid={fieldState.invalid}>
-            <FormLabel>{label}</FormLabel>
+            {props.display !== "none" && <FormLabel>{label}</FormLabel>}
             <RadioGroup
               value={value}
-              onChange={onChange}
               onBlur={onBlur}
               {...props}
+              onChange={(e) => {
+                onChange(e)
+                props?.onChange?.(e)
+              }}
             >
               <Stack direction="row">
                 {options.map((option) => (

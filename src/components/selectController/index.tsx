@@ -30,12 +30,15 @@ const SelectController = ({
       rules={formRules}
       render={({ field: { onBlur, onChange, value }, fieldState }) => {
         return <FormControl isInvalid={fieldState.invalid}>
-          <FormLabel>{label}</FormLabel>
+          {props.display !== "none" && <FormLabel>{label}</FormLabel>}
           <Select
             value={value}
-            onChange={onChange}
             onBlur={onBlur}
             {...props}
+            onChange={(e) => {
+              onChange(e)
+              props?.onChange?.(e)
+            }}
           >
             {options.map((option) => (
               <option value={option.id} key={option.id}>{option.name}</option>

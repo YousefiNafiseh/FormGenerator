@@ -6,16 +6,21 @@ import {
   Divider,
   Flex,
   SimpleGrid,
-  Spacer
+  Spacer,
 } from "@chakra-ui/react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useQuery } from "@tanstack/react-query"
 import {
   FieldValues,
   SubmitHandler,
-  useForm, UseFormReturn
+  useForm,
+  UseFormReturn,
 } from "react-hook-form"
-import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom"
+import {
+  createSearchParams,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom"
 import * as yup from "yup"
 import CheckboxController from "../../components/checkboxController"
 import Form from "../../components/form"
@@ -24,105 +29,179 @@ import RedioController from "../../components/redioController"
 import SelectController from "../../components/selectController"
 import * as paths from "../../routeConfig/paths"
 import { Element, ElementType, Page } from "../../types"
+import { parseExpressions, validation } from "./util"
+import { useEffect, useState } from "react"
 
 const PageRenderer = (): JSX.Element => {
-  const [searchParams] = useSearchParams() 
-  const pageId = searchParams.get("pageId") ?? "" 
+  const [disabled, setDisabled] = useState<{ [key: string]: boolean }>({})
+  const [display, setDisplay] = useState<{ [key: string]: boolean }>({})
+  const [searchParams] = useSearchParams()
+  const pageId = searchParams.get("pageId") ?? ""
   const { data } = useQuery(["pages", pageId], async () => {
-    const response = await fetch(`/api/pages/${pageId}`) 
-    return response.json() 
-  }) 
-  const navigate = useNavigate() 
-  let formProvider: UseFormReturn<FieldValues, any, undefined> 
+    const response = await fetch(`/api/pages/${pageId}`)
+    return response.json()
+  })
+  const navigate = useNavigate()
+  let formProvider: UseFormReturn<FieldValues, any, undefined>
+
+  const handleOnChange = (element: Element) => {
+    (data?.page as Page)?.elements?.forEach((item) => {
+      if (item.editableIf?.includes(element?.name)) {
+        setDisabled((prev) => ({
+          ...prev,
+          [item.name]: validatExpression(item?.editableIf ?? "", false),
+        }))
+      }
+      if (item.visibleIf?.includes(element?.name)) {
+        setDisplay((prev) => ({
+          ...prev,
+          [item.name]: validatExpression(item?.visibleIf ?? "", true),
+        }))
+      }
+    })
+  }
+
   const selectElement = (element: Element) => {
+    const elementProps = {
+      name: element?.name,
+      label: element?.name,
+      isDisabled: disabled[element?.name],
+      onChange: () => handleOnChange(element),
+      display: display[element?.name] ? "block" : "none",
+    }
+
     switch (element.type.toLowerCase()) {
       case ElementType.Text:
         return (
           <Box>
-            <InputController name={element?.name} label={element?.name} />
+            <InputController
+              {...elementProps}
+            />
           </Box>
-        ) 
+        )
       case ElementType.Checkbox:
         return (
           <Box>
-            <CheckboxController name={element?.name} label={element?.name} />
+            <CheckboxController
+              {...elementProps}
+            />
           </Box>
-        ) 
+        )
       case ElementType.Select:
         return (
           <Box>
             <SelectController
-              name={element?.name}
-              label={element?.name}
               options={
                 element?.choices?.map((item) => ({ id: item, name: item })) ??
                 []
               }
+              {...elementProps}
             />
           </Box>
-        ) 
+        )
       case ElementType.Radio:
         return (
           <Box>
             <RedioController
-              name={element?.name}
-              label={element?.name}
               options={
                 element?.choices?.map((item) => ({ id: item, name: item })) ??
                 []
               }
+              {...elementProps}
             />
           </Box>
-        ) 
+        )
       default:
-        return null 
+        return null
     }
-  } 
+  }
 
   const renderElement = () => {
     return (data?.page as Page)?.elements?.map((element) => {
-      return selectElement(element) 
-    }) 
-  } 
+      return selectElement(element)
+    })
+  }
 
   const getRules = () => {
     let obj: {
-      [key: string]: any 
+      [key: string]: any
     } = {};
-    (data?.page as Page)?.elements?.forEach((element:Element) => {
+    (data?.page as Page)?.elements?.forEach((element: Element) => {
       if (element?.requiredIf) {
         if (element?.requiredIf.toLocaleLowerCase() === "required") {
-          obj[element.name] = yup.string().required("Required") 
+          obj[element.name] = yup.string().required("Required")
         } else {
-          const rule = element?.requiredIf.split(",") 
-          obj[element.name] = yup.string().when(rule[0], {
-            is: new Function("val", `return val${rule[1]}`),
-            then: (schema) => schema.required(`${element.name} is Required`),
-          }) 
+          const { fieldsName, operators, literals, logicalExpressions } =
+            parseExpressions(element?.requiredIf)
+          obj[element.name] = yup.string().when(
+            fieldsName.filter((item) => item !== element.name),
+            (values, schema) => {
+              if (
+                validation({ values, literals, operators, logicalExpressions })
+              ) {
+                return schema.required(`${element.name} is Required`)
+              } else return schema.optional()
+            }
+          )
         }
       }
-    }) 
+    })
     const schema = yup.object().shape({
-      ...obj
-    }) 
-    return schema 
-  } 
+      ...obj,
+    })
+    return schema
+  }
 
   formProvider = useForm({
     resolver: yupResolver(getRules()),
-  }) 
+  })
 
+  const validatExpression = (
+    expression: string,
+    defulteReturn: boolean
+  ): boolean => {
+    if (expression) {
+      const { fieldsName, operators, literals, logicalExpressions } =
+        parseExpressions(expression)
+      const values = fieldsName.map((field) => formProvider.watch(field))
+      return validation({
+        values,
+        literals,
+        operators,
+        logicalExpressions,
+      })
+    }
+
+    return defulteReturn
+  }
+
+  useEffect(() => {
+    if (data?.page) {
+      (data?.page as Page)?.elements?.forEach((element) => {
+        setDisabled((prev) => ({
+          ...prev,
+          [element.name]: validatExpression(element?.editableIf ?? "", false),
+        }))
+
+        setDisplay((prev) => ({
+          ...prev,
+          [element.name]: validatExpression(element?.visibleIf ?? "", true),
+        }))
+      })
+    }
+  }, [data])
   const onSubmit: SubmitHandler<FieldValues> = (data, event) => {
-    event?.preventDefault() 
-    formProvider.reset({}) 
-  } 
+    event?.preventDefault()
+    console.log(data)
+    formProvider.reset({})
+  }
 
   return (
-    <Box>
-      <Box position="relative" padding="10">
-        <Divider />
-        <AbsoluteCenter bg="white" px="4" fontSize="3xl">
-          {`${(data?.page as Page)?.name} Page`}
+    <Box py={10} px={4}>
+      <Box position="relative" mb={12}>
+        <Divider borderColor={"green.300"}/>
+        <AbsoluteCenter  bg={"gray.100"} color={"green.500"} px="4" fontSize="3xl">
+          {`${(data?.page as Page)?.name}`}
         </AbsoluteCenter>
       </Box>
       <Form {...{ onSubmit }} formProviderProps={formProvider}>
@@ -143,6 +222,7 @@ const PageRenderer = (): JSX.Element => {
             <Spacer />
             <Box display="flex" gap="2" alignItems="center" cursor="pointer">
               <SettingsIcon
+                color={"green"}
                 fontSize="larger"
                 onClick={() => {
                   navigate({
@@ -150,10 +230,10 @@ const PageRenderer = (): JSX.Element => {
                     search: createSearchParams({
                       pageId: (data?.page as Page)?.id ?? "1",
                     }).toString(),
-                  }) 
+                  })
                 }}
               />
-              <Button colorScheme="teal" type={"submit"}>
+              <Button colorScheme="green" type={"submit"}>
                 {`Submit ${(data?.page as Page)?.name}`}
               </Button>
             </Box>
@@ -161,7 +241,7 @@ const PageRenderer = (): JSX.Element => {
         </Box>
       </Form>
     </Box>
-  ) 
-} 
+  )
+}
 
-export default PageRenderer 
+export default PageRenderer

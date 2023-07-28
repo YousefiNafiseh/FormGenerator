@@ -8,7 +8,7 @@ createServer({
     this.namespace = "api";
 
     this.post("/pages", (schema, request) => {
-      let attrs = JSON.parse(request.requestBody);
+      const attrs = JSON.parse(request.requestBody);
       const data = localStorage.getItem("pages");
       localStorage.setItem(
         "pages",
@@ -22,19 +22,19 @@ createServer({
     });
 
     this.get("/pages/:id", (schema, request) => {
-      let id = request.params.id;
+      const id = request.params.id;
       return schema.pages.find(id);
     });
 
     this.put("pages/:id", (schema, request) => {
-      let newAttrs = JSON.parse(request.requestBody);
-      let id = request.params.id;
+      const newAttrs = JSON.parse(request.requestBody);
+      const id = request.params.id;
       let page = schema.pages.find(id);
 
       const pages = schema.pages.all().models.map((model) => model.attrs);
 
       const findIndex = pages.findIndex((page) => page.id === id);
-      if (findIndex > 0) {
+      if (findIndex >= 0) {
         pages[findIndex] = newAttrs;
       }
       localStorage.setItem("pages", JSON.stringify([...pages]));
@@ -42,15 +42,21 @@ createServer({
     });
 
     this.delete("pages/:id",(schema, request) => {
-      const id = request.params.id
-      const data=localStorage.getItem("pages")
-      const pages = JSON.parse(data)
-      const newPages = pages?.filter((page,index)=> (index+2).toString() !== id) 
-      localStorage.setItem(
-        "pages",
-          JSON.stringify([...newPages])
-      );
-        return schema.pages.find(id).destroy()
+      const id = request.params.id;
+      const pages = schema.pages.all().models.map((model) => model.attrs);
+      const newPages = pages.filter((page) => page.id !== id);
+      localStorage.setItem("pages", JSON.stringify([...newPages]));
+      return schema.pages.find(id).destroy()
+      
+      // const id = request.params.id
+      // const data=localStorage.getItem("pages")
+      // const pages = JSON.parse(data)
+      // const newPages = pages?.filter((page,index)=> (index+2).toString() !== id) 
+      // localStorage.setItem(
+      //   "pages",
+      //     JSON.stringify([...newPages])
+      // );
+      //   return schema.pages.find(id).destroy()
     });
   },
   seeds(server) {

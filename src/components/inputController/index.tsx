@@ -4,9 +4,9 @@ import {
   FormHelperText,
   FormLabel,
   Input,
-  InputProps,
-} from "@chakra-ui/react" 
-import { Controller, RegisterOptions, useFormContext } from "react-hook-form" 
+  InputProps
+} from "@chakra-ui/react"
+import { Controller, RegisterOptions, useFormContext } from "react-hook-form"
 
 interface InputControllerProps extends InputProps {
   label: string;
@@ -23,9 +23,9 @@ const InputController = ({
   helperText,
   ...props
 }: InputControllerProps): JSX.Element => {
-  const { control, watch } = useFormContext() 
+  const { control, watch } = useFormContext()
 
-  const defaultValue = watch(name) || "" 
+  const defaultValue = watch(name) || ""
   return (
     <Controller
       name={name}
@@ -35,24 +35,27 @@ const InputController = ({
       render={({ field: { onBlur, onChange, value }, fieldState }) => {
         return (
           <FormControl isInvalid={fieldState.invalid}>
-            <FormLabel>{label}</FormLabel>
+            {props.display !== "none" && <FormLabel>{label}</FormLabel>}
             <Input
               value={value}
-              onChange={onChange}
-              onBlur={onBlur}
               {...props}
+              onChange={(e) => {
+                onChange(e)
+                props?.onChange?.(e)
+              }}
+              onBlur={onBlur}
               placeholder={label}
             />
             {!fieldState.invalid ? (
               <FormHelperText>{helperText}</FormHelperText>
             ) : (
-              <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
-            )}
+                <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
+              )}
           </FormControl>
-        ) 
+        )
       }}
     />
-  ) 
-} 
+  )
+}
 
 export default InputController 

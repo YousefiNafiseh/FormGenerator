@@ -14,6 +14,7 @@ import { ElementType, Page } from "../../types"
 import { ChevronDownIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons"
 import { FormButton } from "../../components/formButton"
 import { FormModal } from "../../components/formModal"
+import { Parser } from "acorn" 
 
 interface FieldsProps {
   formProviderProps: UseFormReturn<Page, any, undefined>
@@ -29,7 +30,7 @@ const Fields: FC<FieldsProps> = ({ formProviderProps }) => {
   const { fields, append, remove } = useFieldArray({
     control: formProviderProps.control,
     name: "elements"
-  });
+  }) 
 
   const addField = () => {
     append({
@@ -46,9 +47,20 @@ const Fields: FC<FieldsProps> = ({ formProviderProps }) => {
     setFieldsCollapse(collapse => ({ ...collapse, [index]: !collapse?.[index] }))
   }
 
-  const handleDelete = (index: number) => {
-    onOpen()
-  }
+  const validateIf = (value: string) => {
+    if (value) {
+      try {
+        Parser.parse(value, {
+          ecmaVersion: "latest",
+        }) 
+        return true 
+      } catch {
+        return "RequiredIf is not valid" 
+      }
+    } else {
+      return true 
+    }
+  } 
 
   return (
     <>
@@ -101,19 +113,31 @@ const Fields: FC<FieldsProps> = ({ formProviderProps }) => {
                   <InputController
                     focusBorderColor={"green.300"}
                     name={`elements.${index}.requiredIf`}
-                    label={"RequiredIf"} />
+                    label={"RequiredIf"}
+                    formRules={{
+                      validate: validateIf,
+                    }}
+                  />
                 </Box>
                 <Box>
                   <InputController
                     focusBorderColor={"green.300"}
                     name={`elements.${index}.visibleIf`}
-                    label={"VisibleIf"} />
+                    label={"VisibleIf"}
+                    formRules={{
+                      validate: validateIf,
+                    }}
+                  />
                 </Box>
                 <Box>
                   <InputController
                     focusBorderColor={"green.300"}
                     name={`elements.${index}.editableIf`}
-                    label={"EditableIf"} />
+                    label={"EditableIf"}
+                    formRules={{
+                      validate: validateIf,
+                    }}
+                  />
                 </Box>
                 <Box></Box>
                 {index > 0 && <Box display={"flex"} justifyContent={"center"} mt={6}>
@@ -121,7 +145,7 @@ const Fields: FC<FieldsProps> = ({ formProviderProps }) => {
                     text={"Remove Field"}
                     color="red.500"
                     icon={<DeleteIcon boxSize={4} color={"red.500"} mr={2} />}
-                    onClick={() => handleDelete(index)}
+                    onClick={()=>onOpen()}
                   />
                   <FormModal
                     {...{

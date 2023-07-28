@@ -26,7 +26,7 @@ export const Sidebar = () => {
     return (
       <List spacing={3} p={4}>
         {data?.pages?.map((page: Page) => (
-          <ListItem cursor={"pointer"} onClick={() => selectForm(page)}>
+          <ListItem key={page.id} cursor={"pointer"} onClick={() => selectForm(page)}>
             <ListIcon as={ArrowForwardIcon} />
             {page?.name}
           </ListItem>
