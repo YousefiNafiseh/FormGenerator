@@ -8,19 +8,16 @@ const routes = [
     title: "Page List",
     path: paths.PAGE,
     component: PageList,
-    sideBar: true,
   },
   {
     title: "Create Page",
     path: paths.PAGE_CREATE,
     component: CreatePage,
-    sideBar: false,
   },
   {
     title: "Render Page",
     path: paths.PAGE_RENDER,
     component: PageRenderer,
-    sideBar: false,
   },
 ] 
 export default routes 

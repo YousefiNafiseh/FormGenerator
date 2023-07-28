@@ -47,16 +47,6 @@ createServer({
       const newPages = pages.filter((page) => page.id !== id);
       localStorage.setItem("pages", JSON.stringify([...newPages]));
       return schema.pages.find(id).destroy()
-      
-      // const id = request.params.id
-      // const data=localStorage.getItem("pages")
-      // const pages = JSON.parse(data)
-      // const newPages = pages?.filter((page,index)=> (index+2).toString() !== id) 
-      // localStorage.setItem(
-      //   "pages",
-      //     JSON.stringify([...newPages])
-      // );
-      //   return schema.pages.find(id).destroy()
     });
   },
   seeds(server) {

@@ -1,17 +1,17 @@
-import { Box, Button, useDisclosure } from "@chakra-ui/react" 
+import { Box, Button, useDisclosure } from "@chakra-ui/react"
 import {
   useMutation,
   useQuery,
   useQueryClient
-} from "@tanstack/react-query" 
-import { useEffect } from "react" 
-import { SubmitHandler, useForm } from "react-hook-form"  
-import { useNavigate, useSearchParams } from "react-router-dom" 
-import Form from "../../components/form" 
-import InputController from "../../components/inputController" 
-import * as paths from "../../routeConfig/paths" 
-import { ElementType, Page } from "../../types" 
-import Fields from "./Fields" 
+} from "@tanstack/react-query"
+import { useEffect } from "react"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import Form from "../../components/form"
+import InputController from "../../components/inputController"
+import * as paths from "../../routeConfig/paths"
+import { ElementType, Page } from "../../types"
+import Fields from "./Fields"
 import { FormModal } from "../../components/formModal"
 
 const CreatePage = () => {
@@ -21,16 +21,20 @@ const CreatePage = () => {
   const { data } = useQuery(["pages", pageId], async () => {
     const response = await fetch(`/api/pages/${pageId}`)
     return response.json()
-  })
+  },
+    {
+      enabled: !!pageId
+    }
+  )
   const navigate = useNavigate()
   const formProviderProps = useForm<Page>(
     {
       defaultValues: {
-        id: "0" ,
-        name: "" ,
+        id: "0",
+        name: "",
         elements: [{
           type: ElementType.Text,
-          name: "" 
+          name: ""
         }]
       }
     }
@@ -39,7 +43,7 @@ const CreatePage = () => {
 
   useEffect(() => {
     if (data && pageId) {
-      const { name, elements } = data?.page as Page
+      const { name } = data?.page as Page
       formProviderProps.setValue("name", name)
       formProviderProps.reset(data.page)
     }
@@ -126,10 +130,6 @@ const CreatePage = () => {
     deleteMutation.mutate()
   }
 
-  const closePage = () => {
-
-  }
-
   return (
     <>
       <Box py={8} px={4} color={"gray.600"}>
@@ -149,19 +149,19 @@ const CreatePage = () => {
             <Box>
               <Button
                 mr={4}
-                colorScheme="green" 
-                variant="solid" 
-                size= "lg" 
+                colorScheme="green"
+                variant="solid"
+                size="lg"
                 type="submit">
                 Submit Page
-          </Button>
+              </Button>
               {pageId &&
                 <>
                   <Button
                     colorScheme="red"
                     variant="solid"
-                    size= "lg"
-                    onClick={()=>onOpen()}>
+                    size="lg"
+                    onClick={() => onOpen()}>
                     Delete Page
                   </Button>
                   <FormModal
@@ -179,8 +179,8 @@ const CreatePage = () => {
             </Box>
             <Button
               ml={4}
-              colorScheme= "green"
-              size= "lg"
+              colorScheme="green"
+              size="lg"
               variant="outline"
               onClick={() => showPages()}>
               Close

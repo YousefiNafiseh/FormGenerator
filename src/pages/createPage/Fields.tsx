@@ -1,20 +1,19 @@
+import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons"
 import {
   Box,
-  Button,
-  SimpleGrid,
   Collapse,
-  useDisclosure,
-  Text
+  SimpleGrid,
+  Text,
+  useDisclosure
 } from "@chakra-ui/react"
+import { Parser } from "acorn"
 import { FC, useState } from "react"
-import { useFieldArray, UseFormReturn } from "react-hook-form"
+import { UseFormReturn, useFieldArray } from "react-hook-form"
+import { FormButton } from "../../components/formButton"
+import { FormModal } from "../../components/formModal"
 import InputController from "../../components/inputController"
 import SelectController from "../../components/selectController"
 import { ElementType, Page } from "../../types"
-import { ChevronDownIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons"
-import { FormButton } from "../../components/formButton"
-import { FormModal } from "../../components/formModal"
-import { Parser } from "acorn" 
 
 interface FieldsProps {
   formProviderProps: UseFormReturn<Page, any, undefined>

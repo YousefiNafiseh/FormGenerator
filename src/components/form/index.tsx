@@ -1,13 +1,12 @@
 import { ReactElement } from "react";
 import {
-  FormProvider, SubmitErrorHandler,
+  FormProvider, 
+  SubmitErrorHandler,
   SubmitHandler,
-
   useForm,
-  UseFormProps, UseFormReturn
+  UseFormProps, 
+  UseFormReturn
 } from "react-hook-form";
-import { extendTheme } from "@chakra-ui/react";
-
 
 type functionalChildren<T extends Record<string, any>> = (
   props: UseFormReturn<T>
