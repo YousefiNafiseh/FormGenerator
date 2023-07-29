@@ -1,10 +1,9 @@
+import { AddIcon } from "@chakra-ui/icons"
 import {
   Box,
 } from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
-import { createSearchParams, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import * as paths from "../../routeConfig/paths"
-import { Page } from "../../types"
 
 function FormList() {
   const navigate = useNavigate()

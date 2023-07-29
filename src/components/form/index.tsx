@@ -1,22 +1,16 @@
-import { ReactElement } from "react";
+import { ReactNode } from "react";
 import {
-  FormProvider, 
+  FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
-  useForm,
-  UseFormProps, 
-  UseFormReturn
+  UseFormProps,
+  UseFormReturn,
+  useForm
 } from "react-hook-form";
 
-type functionalChildren<T extends Record<string, any>> = (
-  props: UseFormReturn<T>
-) => JSX.Element;
-type children<T extends Record<string, any>> =
-  | ReactElement<UseFormReturn>
-  | functionalChildren<T>;
 type FormProps<TFormValues extends Record<string, any>> = {
   onSubmit: SubmitHandler<TFormValues>;
-  children: children<TFormValues>[] | children<TFormValues>;
+  children: ReactNode;
   id?: string;
   onInvalid?: SubmitErrorHandler<TFormValues>;
   formProviderProps?: UseFormReturn<TFormValues, any>;
@@ -36,23 +30,10 @@ const Form = <TFormValues extends Record<string, any>>({
   });
   const Form = formProviderProps ? formProviderProps : newForm
 
-  const getChild = <T,>(item: T) => {
-    if (typeof item === "function") {
-      return item(Form)
-    } else return item
-  }
-
-  const newChild = () => {
-    if (children && Array.isArray(children))
-      return children.map((item) => getChild<children<TFormValues>>(item))
-    else if (children) return getChild(children)
-    else return null
-  }
-
   return (
     <FormProvider {...Form}>
       <form id={id} onSubmit={Form.handleSubmit(onSubmit, onInvalid)}>
-        {newChild()}
+        {children}
       </form>
     </FormProvider>
   )
