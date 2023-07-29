@@ -61,7 +61,7 @@ const PageRenderer = (): JSX.Element => {
     })
   }
 
-  const selectElement = (element: Element) => {
+  const createElement = (element: Element) => {
     const elementProps = {
       name: element?.name,
       label: element?.name,
@@ -118,7 +118,7 @@ const PageRenderer = (): JSX.Element => {
 
   const renderElement = () => {
     return (data?.page as Page)?.elements?.map((element) => {
-      return selectElement(element)
+      return createElement(element)
     })
   }
 
@@ -128,8 +128,8 @@ const PageRenderer = (): JSX.Element => {
     } = {};
     (data?.page as Page)?.elements?.forEach((element: Element) => {
       if (element?.requiredIf) {
-        if (element?.requiredIf.toLocaleLowerCase() === "required") {
-          obj[element.name] = yup.string().required("Required")
+        if (element?.requiredIf.toLowerCase() === "required") {
+          obj[element.name] = yup.string().required(`${element.name} is Required`)
         } else {
           const { fieldsName, operators, literals, logicalExpressions } =
             parseExpressions(element?.requiredIf)
@@ -190,6 +190,7 @@ const PageRenderer = (): JSX.Element => {
       })
     }
   }, [data])
+
   const onSubmit: SubmitHandler<FieldValues> = (data, event) => {
     event?.preventDefault()
     console.log(data)
