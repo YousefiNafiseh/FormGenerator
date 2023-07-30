@@ -62,7 +62,6 @@ const PageRenderer = (): JSX.Element => {
   }
 
   const createElement = (element: Element) => {
-    console.log(element)
     const elementProps = {
       name: element?.name,
       label: element?.name,
