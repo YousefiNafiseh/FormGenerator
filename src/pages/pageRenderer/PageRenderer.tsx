@@ -62,6 +62,7 @@ const PageRenderer = (): JSX.Element => {
   }
 
   const createElement = (element: Element) => {
+    console.log(element)
     const elementProps = {
       name: element?.name,
       label: element?.name,
@@ -69,6 +70,8 @@ const PageRenderer = (): JSX.Element => {
       onChange: () => handleOnChange(element),
       display: display[element?.name] ? "block" : "none",
     }
+
+    const convertChoice = typeof element?.choices === "string" ? (element?.choices as any as string)?.split(',') : element?.choices
 
     switch (element.type.toLowerCase()) {
       case ElementType.Text:
@@ -92,7 +95,7 @@ const PageRenderer = (): JSX.Element => {
           <Box>
             <SelectController
               options={
-                element?.choices?.map((item) => ({ id: item, name: item })) ??
+                convertChoice?.map((item) => ({ id: item, name: item })) ??
                 []
               }
               {...elementProps}
@@ -104,7 +107,7 @@ const PageRenderer = (): JSX.Element => {
           <Box>
             <RedioController
               options={
-                element?.choices?.map((item) => ({ id: item, name: item })) ??
+                convertChoice?.map((item) => ({ id: item, name: item })) ??
                 []
               }
               {...elementProps}
