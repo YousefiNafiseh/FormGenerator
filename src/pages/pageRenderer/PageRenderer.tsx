@@ -93,6 +93,7 @@ const PageRenderer = (): JSX.Element => {
         return (
           <Box>
             <SelectController
+              defaultValue={convertChoice?.[0]}
               options={
                 convertChoice?.map((item) => ({ id: item, name: item })) ??
                 []
@@ -105,6 +106,7 @@ const PageRenderer = (): JSX.Element => {
         return (
           <Box>
             <RedioController
+              defaultValue={convertChoice?.[0]}
               options={
                 convertChoice?.map((item) => ({ id: item, name: item })) ??
                 []
@@ -202,8 +204,8 @@ const PageRenderer = (): JSX.Element => {
   return (
     <Box py={10} px={4}>
       <Box position="relative" mb={12}>
-        <Divider borderColor={"green.300"}/>
-        <AbsoluteCenter  bg={"gray.100"} color={"green.500"} px="4" fontSize="3xl">
+        <Divider borderColor={"green.300"} />
+        <AbsoluteCenter bg={"gray.100"} color={"green.500"} px="4" fontSize="3xl">
           {`${(data?.page as Page)?.name}`}
         </AbsoluteCenter>
       </Box>

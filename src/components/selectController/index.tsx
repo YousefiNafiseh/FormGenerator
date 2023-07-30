@@ -21,7 +21,7 @@ const SelectController = ({
 }: SelectControllerProps): JSX.Element => {
   const { control, watch } = useFormContext()
 
-  const defaultValue = watch(name) || ""
+  const defaultValue = (props.defaultValue ?? watch(name)) || ""
   return (
     <Controller
       name={name}
